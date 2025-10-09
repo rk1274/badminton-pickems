@@ -57,11 +57,33 @@ h2 {
 
 .group-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 
     padding: 20px;
+}
+
+.name {
+    color: #a3c49e;
+    font-weight: bold;
+}
+
+.num-container {
+    margin-top: 15px;
+}
+
+.num {
+    padding: 15px 20px;
+    margin: 14px 0;
+    background: none;
+    border-radius: 10px;
+    margin-right: 30px;
+    color: #a3c49e;
+    font-weight: bold;
+    border-style: solid;
+    border-width: 3px;
+    border-color: #a3c49e;;
 }

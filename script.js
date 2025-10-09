@@ -63,9 +63,32 @@ const groups = [
 
 const groupsContainer = document.querySelector(".groups-container");
 
+const setPairs = (group, pairContainer) => {
+    group.pairs.forEach(pairObj => {
+        const pairItem = document.createElement("li");
+        pairItem.classList.add("sortable-item");
+        pairItem.setAttribute("draggable", "true");
+        pairItem.innerHTML = pairObj.pair.join(" & ");
+        pairItem.style.borderColor = pairObj.colour;
+
+        pairContainer.appendChild(pairItem);
+    });
+}
+
 groups.forEach(group => {
   const groupContainer = document.createElement("div");
   groupContainer.classList.add("group-container");
+  
+  const numContainer = document.createElement("div");
+  numContainer.classList.add("num-container");
+  
+  for (i = 1; i < 4; i++) {
+    const num = document.createElement("div"); 
+    num.classList.add("num");
+    num.innerHTML = i;
+
+    numContainer.appendChild(num);
+  }
 
   const pairContainer = document.createElement("ul");
   pairContainer.classList.add("group");
@@ -73,21 +96,17 @@ groups.forEach(group => {
   const groupName = document.createElement("div");
   groupName.classList.add("name");
   groupName.innerHTML = group.name;
+
   pairContainer.appendChild(groupName);
 
-  group.pairs.forEach(pairObj => {
-    const pairItem = document.createElement("li");
-    pairItem.classList.add("sortable-item");
-    pairItem.setAttribute("draggable", "true");
-    pairItem.innerHTML = pairObj.pair.join(" & ");
-    pairItem.style.borderColor = pairObj.colour;
+  
+  setPairs(group, pairContainer);
 
-    pairContainer.appendChild(pairItem);
-  });
-
+  groupContainer.appendChild(numContainer);
   groupContainer.appendChild(pairContainer);
   groupsContainer.appendChild(groupContainer);
 });
+
 
 document.querySelectorAll(".group").forEach(list => {
   let draggingItem = null;
