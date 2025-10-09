@@ -2,25 +2,61 @@ const groups = [
   {
     name: "Group 1",
     pairs: [
-      ["Joy", "Kelvin"],
-      ["Ash", "David"],
-      ["Andee", "VJ"],
+      {
+        pair: ["Joy", "Kelvin"],
+        colour: "#72916e",
+        text: "#000000ff",
+      },
+      {
+        pair: ["Ash", "David"],
+        colour: "#a3c4bc",
+        text: "#000000ff",
+      },
+      {
+        pair: ["Vanne", "VJ"],
+        colour: "#d9e6d0",
+        text: "#000000ff",
+      },
     ],
   },
   {
     name: "Group 2",
     pairs: [
-      ["Bryan", "Khrystle"],
-      ["Rosie", "Kacper"],
-      ["Josh", "Lanz 1"],
+      {
+        pair: ["Bryan", "Khrystle"],
+        colour: "#FF5900",
+        text: "#000000ff",
+      },
+      {
+        pair: ["Rosie", "Kacper"],
+        colour: "#ff8383ff",
+        text: "#000000ff",
+      },
+      {
+        pair: ["Josh", "Lanz 1"],
+        colour: "#88a08e",
+        text: "#000000ff",
+      },
     ],
   },
   {
     name: "Group 3",
     pairs: [
-      ["Francis", "Dal"],
-      ["Vedant", "Abhay"],
-      ["Lanz 2", "Vanne"],
+      {
+        pair: ["Francis", "Dal"],
+        colour: "#5B3256",
+        text: "#adadadff",
+      },
+      {
+        pair: ["Vedant", "Abhay"],
+        colour: "#0000cd",
+        text: "#adadadff",
+      },
+      {
+        pair: ["Lanz 2", "Andee"],
+        colour: "#6e8f6a",
+        text: "#000000ff",
+      },
     ],
   },
 ];
@@ -39,11 +75,12 @@ groups.forEach(group => {
   groupName.innerHTML = group.name;
   pairContainer.appendChild(groupName);
 
-  group.pairs.forEach(pair => {
+  group.pairs.forEach(pairObj => {
     const pairItem = document.createElement("li");
     pairItem.classList.add("sortable-item");
     pairItem.setAttribute("draggable", "true");
-    pairItem.innerHTML = pair.join(" & ");
+    pairItem.innerHTML = pairObj.pair.join(" & ");
+    pairItem.style.borderColor = pairObj.colour;
 
     pairContainer.appendChild(pairItem);
   });
@@ -54,6 +91,7 @@ groups.forEach(group => {
 
 document.querySelectorAll(".group").forEach(list => {
   let draggingItem = null;
+  let dropTarget = null;
 
   list.addEventListener("dragstart", e => {
     draggingItem = e.target;
@@ -64,17 +102,33 @@ document.querySelectorAll(".group").forEach(list => {
     e.target.classList.remove("dragging");
     document.querySelectorAll(".sortable-item").forEach(item => item.classList.remove("over"));
     draggingItem = null;
+    dropTarget = null;
   });
 
   list.addEventListener("dragover", e => {
     e.preventDefault();
+
+    // Find the item you're hovering over
     const draggingOverItem = getDragAfterElement(list, e.clientY);
 
+    // Remove all .over before adding new one
     document.querySelectorAll(".sortable-item").forEach(item => item.classList.remove("over"));
 
-    if (draggingOverItem) {
+    if (draggingOverItem && draggingOverItem !== draggingItem) {
       draggingOverItem.classList.add("over");
-      list.insertBefore(draggingItem, draggingOverItem);
+      dropTarget = draggingOverItem;
+    } else {
+      dropTarget = null;
+    }
+  });
+
+  list.addEventListener("drop", e => {
+    e.preventDefault();
+
+    // Insert the dragged item in the new position
+    if (dropTarget) {
+      dropTarget.classList.remove("over");
+      list.insertBefore(draggingItem, dropTarget);
     } else {
       list.appendChild(draggingItem);
     }

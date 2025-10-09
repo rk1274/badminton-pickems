@@ -22,7 +22,9 @@ h2 {
     padding: 15px 20px;
     margin: 12px 0;
     background: #c8e2c4;
-    border-radius: 5px;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 3px;
     font-size: 1.1em;
     color: #333;
     font-weight: bold;
@@ -41,10 +43,10 @@ h2 {
     transform: rotate(-2deg);
 }
 
-/* .over {
-    border: 2px dashed #ff8c42;
-    background: #fff3e0;
-} */
+.over {
+    border: 2px dashed #233a20;
+    background: #97b891;
+}
 
 .groups-container {
     display: flex;
