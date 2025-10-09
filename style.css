@@ -50,6 +50,7 @@ h2 {
 
 .groups-container {
     display: flex;
+     flex-wrap: wrap;
     justify-content: center;
     gap: 40px;
     margin-top: 30px;
