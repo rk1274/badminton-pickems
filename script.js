@@ -30,10 +30,11 @@ const usernameInput = document.getElementById("username");
 const loadBtn = document.getElementById("load-btn");
 const submitBtn = document.getElementById("submit-btn");
 
+// -------------------- Render Groups --------------------
 function renderGroups(existingSelections = {}) {
   groupsContainer.innerHTML = "";
 
-  groups.forEach(group => {
+  groups.forEach((group) => {
     const groupContainer = document.createElement("div");
     groupContainer.classList.add("group-container");
 
@@ -42,51 +43,83 @@ function renderGroups(existingSelections = {}) {
     groupName.textContent = group.name;
     groupContainer.appendChild(groupName);
 
-    const pairContainer = document.createElement("ul");
-    pairContainer.classList.add("group");
+    // Slots container
+    const slotsContainer = document.createElement("ul");
+    slotsContainer.classList.add("slots");
+    for (let i = 0; i < 3; i++) {
+      const slot = document.createElement("li");
+      slot.classList.add("slot");
+      slotsContainer.appendChild(slot);
+    }
+    groupContainer.appendChild(slotsContainer);
 
-    // If user has saved picks, use their saved order
-    const order = existingSelections[group.name];
-    const pairs = order
-      ? order.map(nameStr => group.pairs.find(p => p.pair.join(" & ") === nameStr))
-      : group.pairs;
-
-    pairs.forEach(pairObj => {
-      const pairItem = document.createElement("li");
-      pairItem.classList.add("sortable-item");
-      pairItem.innerHTML = pairObj.pair.join(" & ");
-      pairItem.style.borderColor = pairObj.colour;
-      pairContainer.appendChild(pairItem);
+    // Player pool
+    const poolContainer = document.createElement("ul");
+    poolContainer.classList.add("player-pool");
+    group.pairs.forEach((pairObj) => {
+      const playerItem = document.createElement("li");
+      playerItem.classList.add("player");
+      playerItem.textContent = pairObj.pair.join(" & ");
+      playerItem.style.borderColor = pairObj.colour;
+      poolContainer.appendChild(playerItem);
     });
+    groupContainer.appendChild(poolContainer);
 
-    groupContainer.appendChild(pairContainer);
     groupsContainer.appendChild(groupContainer);
 
-    Sortable.create(pairContainer, {
+    // -------------------- Initialize Sortable --------------------
+    Sortable.create(slotsContainer, {
+      group: `group-${group.name}`,
       animation: 150,
-      ghostClass: "dragging",
+      swap: true,
+      swapClass: "dragging",
     });
+
+    Sortable.create(poolContainer, {
+      group: `group-${group.name}`,
+      animation: 150,
+      swap: true,
+      swapClass: "dragging",
+    });
+
+    // Populate saved selections
+    const saved = existingSelections[group.name];
+    if (saved) {
+      saved.forEach((name, idx) => {
+        const slot = slotsContainer.children[idx];
+        const player = Array.from(poolContainer.children).find(
+          (p) => p.textContent === name
+        );
+        if (player) slot.appendChild(player);
+      });
+    }
   });
 }
 
-// Helper: get current selections
+// -------------------- Get Current Selections --------------------
 function getSelections() {
   const selections = {};
-  document.querySelectorAll(".group-container").forEach(container => {
+
+  document.querySelectorAll(".group-container").forEach((container) => {
     const groupName = container.querySelector(".name").textContent;
-    const pairItems = container.querySelectorAll(".sortable-item");
-    selections[groupName] = Array.from(pairItems).map(item => item.textContent);
+    const slots = container.querySelectorAll(".slot");
+    selections[groupName] = Array.from(slots)
+      .map((slot) => slot.textContent.trim())
+      .filter(Boolean); // ignore empty slots
   });
+
   return selections;
 }
 
-// Load existing picks
+// -------------------- Load Existing Picks --------------------
 loadBtn.addEventListener("click", async () => {
   const username = usernameInput.value.trim();
   if (!username) return alert("Please enter your name first.");
 
   try {
-    const res = await fetch(`/.netlify/functions/get-picks?username=${encodeURIComponent(username)}`);
+    const res = await fetch(
+      `/.netlify/functions/get-picks?username=${encodeURIComponent(username)}`
+    );
     if (!res.ok) {
       alert("No saved picks found for this name. You can start a new one.");
       renderGroups();
@@ -101,7 +134,7 @@ loadBtn.addEventListener("click", async () => {
   }
 });
 
-// Submit / Save picks
+// -------------------- Submit / Save Picks --------------------
 submitBtn.addEventListener("click", async () => {
   const username = usernameInput.value.trim();
   if (!username) return alert("Please enter your name first.");
@@ -123,5 +156,5 @@ submitBtn.addEventListener("click", async () => {
   }
 });
 
-// Render default on first load
+// -------------------- Initial Render --------------------
 renderGroups();
