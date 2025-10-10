@@ -34,6 +34,7 @@ const submitBtn = document.getElementById("submit-btn");
 function renderGroups(existingSelections = {}) {
   groupsContainer.innerHTML = "";
 
+  // --- Render regular groups ---
   groups.forEach((group) => {
     const groupContainer = document.createElement("div");
     groupContainer.classList.add("group-container");
@@ -43,7 +44,7 @@ function renderGroups(existingSelections = {}) {
     groupName.textContent = group.name;
     groupContainer.appendChild(groupName);
 
-    // Slots container
+    // Slots
     const slotsContainer = document.createElement("ul");
     slotsContainer.classList.add("slots");
     for (let i = 0; i < 3; i++) {
@@ -67,7 +68,7 @@ function renderGroups(existingSelections = {}) {
 
     groupsContainer.appendChild(groupContainer);
 
-    // -------------------- Initialize Sortable --------------------
+    // Sortable logic
     Sortable.create(slotsContainer, {
       group: `group-${group.name}`,
       animation: 150,
@@ -82,7 +83,7 @@ function renderGroups(existingSelections = {}) {
       swapClass: "dragging",
     });
 
-    // Populate saved selections
+    // Load saved picks
     const saved = existingSelections[group.name];
     if (saved) {
       saved.forEach((name, idx) => {
@@ -90,18 +91,83 @@ function renderGroups(existingSelections = {}) {
         const player = Array.from(poolContainer.children).find(
           (p) => p.textContent === name
         );
-      
         if (player) {
-          // --- swap the slot and player in the DOM ---
           const temp = document.createElement("li");
-          poolContainer.replaceChild(temp, player); // placeholder where player was
-          slotsContainer.replaceChild(player, slot); // move player into slot
-          poolContainer.replaceChild(slot, temp);    // move old slot into pool
+          poolContainer.replaceChild(temp, player);
+          slotsContainer.replaceChild(player, slot);
+          poolContainer.replaceChild(slot, temp);
         }
       });
     }
   });
+
+  // --- Overall Top 3 Section ---
+  const overallContainer = document.createElement("div");
+  overallContainer.classList.add("group-container");
+
+  const overallName = document.createElement("div");
+  overallName.classList.add("name");
+  overallName.textContent = "🏆 Overall Top 3";
+  overallContainer.appendChild(overallName);
+
+  const overallSlots = document.createElement("ul");
+  overallSlots.classList.add("slots");
+  for (let i = 0; i < 3; i++) {
+    const slot = document.createElement("li");
+    slot.classList.add("slot");
+    overallSlots.appendChild(slot);
+  }
+  overallContainer.appendChild(overallSlots);
+
+  const overallPool = document.createElement("ul");
+  overallPool.classList.add("player-pool");
+
+  // Flatten all pairs from all groups
+  const allPairs = groups.flatMap((g) => g.pairs);
+  allPairs.forEach((pairObj) => {
+    const playerItem = document.createElement("li");
+    playerItem.classList.add("player");
+    playerItem.textContent = pairObj.pair.join(" & ");
+    playerItem.style.borderColor = pairObj.colour;
+    overallPool.appendChild(playerItem);
+  });
+
+  overallContainer.appendChild(overallPool);
+  groupsContainer.appendChild(overallContainer);
+
+  // Sortables for Overall section
+  Sortable.create(overallSlots, {
+    group: "overall",
+    animation: 150,
+    swap: true,
+    swapClass: "dragging",
+  });
+
+  Sortable.create(overallPool, {
+    group: "overall",
+    animation: 150,
+    swap: true,
+    swapClass: "dragging",
+  });
+
+  // Load saved picks
+  const savedOverall = existingSelections["Overall Top 3"];
+  if (savedOverall) {
+    savedOverall.forEach((name, idx) => {
+      const slot = overallSlots.children[idx];
+      const player = Array.from(overallPool.children).find(
+        (p) => p.textContent === name
+      );
+      if (player) {
+        const temp = document.createElement("li");
+        overallPool.replaceChild(temp, player);
+        overallSlots.replaceChild(player, slot);
+        overallPool.replaceChild(slot, temp);
+      }
+    });
+  }
 }
+
 
 // -------------------- Get Current Selections --------------------
 function getSelections() {
@@ -109,14 +175,15 @@ function getSelections() {
 
   document.querySelectorAll(".group-container").forEach((container) => {
     const groupName = container.querySelector(".name").textContent;
-    const slots = container.querySelectorAll(".slots li"); // all li in slots
+    const slots = container.querySelectorAll(".slot");
     selections[groupName] = Array.from(slots)
       .map((slot) => slot.textContent.trim())
-      .filter(Boolean); // ignore empty slots
+      .filter(Boolean);
   });
 
   return selections;
 }
+
 
 function showMessage(text, type = "info") {
   const msg = document.getElementById("message");
@@ -163,7 +230,10 @@ submitBtn.addEventListener("click", async () => {
       body: JSON.stringify({ username, selections }),
     });
 
-    if (res.ok) showMessage("Your picks have been saved!", "success");
+    const data = await res.json();
+
+    if (res.ok) showMessage(data.message, "success");
+    else if (res.status === 403) showMessage(data.message, "error");
     else showMessage("Error saving picks.", "error");
   } catch (err) {
     console.error(err);

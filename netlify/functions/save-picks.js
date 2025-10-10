@@ -9,14 +9,33 @@ export async function handler(event) {
 
   const { username, selections } = JSON.parse(event.body);
 
-  const { error } = await supabase
+  // Check if this user already submitted
+  const { data: existing, error: selectError } = await supabase
     .from('picks')
-    .upsert({ username, data: selections });
+    .select('username')
+    .eq('username', username)
+    .single();
 
-  if (error) {
-    return { statusCode: 500, body: JSON.stringify(error) };
+  if (selectError && selectError.code !== 'PGRST116') {
+    return { statusCode: 500, body: JSON.stringify(selectError) };
+  }
+
+  if (existing) {
+    // User already submitted
+    return {
+      statusCode: 403,
+      body: JSON.stringify({ message: 'You cannot change your picks once submitted.' }),
+    };
+  }
+
+  // Insert new picks
+  const { error: insertError } = await supabase
+    .from('picks')
+    .insert({ username, data: selections });
+
+  if (insertError) {
+    return { statusCode: 500, body: JSON.stringify(insertError) };
   }
 
   return { statusCode: 200, body: JSON.stringify({ message: 'Saved!' }) };
 }
-
