@@ -249,23 +249,36 @@ submitBtn.addEventListener("click", async () => {
 
 async function loadUsernames() {
   try {
-    const res = await fetch("/.netlify/functions/get-all-usernames"); // you'll create this endpoint
+    const res = await fetch("/.netlify/functions/get-all-usernames");
     if (!res.ok) return;
-    const usernames = await res.json(); // expects ["Alice", "Bob", "Charlie"]
+    const usernames = await res.json();
 
-    console.log("Usernames loaded:", usernames);
-
-    const datalist = document.getElementById("usernames");
-    datalist.innerHTML = ""; // clear old options
+    const usernameSelect = document.getElementById("usernameSelect");
+    usernameSelect.innerHTML = '<option value="">-- Or choose from existing pickems --</option>';
 
     usernames.forEach((name) => {
       const option = document.createElement("option");
       option.value = name;
-      datalist.appendChild(option);
+      option.textContent = name;
+      usernameSelect.appendChild(option);
     });
   } catch (err) {
     console.error("Error loading usernames:", err);
   }
+}
+
+const usernameSelect = document.getElementById("usernameSelect"); // ID for your <select>
+
+// Reset dropdown if user starts typing
+usernameInput.addEventListener("input", () => {
+  if (usernameSelect) usernameSelect.selectedIndex = 0;
+});
+
+// Update input if user picks from dropdown
+if (usernameSelect) {
+  usernameSelect.addEventListener("change", (e) => {
+    usernameInput.value = e.target.value;
+  });
 }
 
 // Load usernames when page loads

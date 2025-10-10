@@ -10,10 +10,17 @@
     <h2>Manchester Badminton Pickems</h2>
 
     <div class="controls">
-        <input id="username" list="usernames" placeholder="Enter your name..." />
-        <datalist id="usernames"></datalist>
+      <div class="username-input">
+        <input id="username" type="text" placeholder="Enter your name..." />
+        <select id="usernameSelect">
+          <option value="">--Or choose from existing pickems --</option>
+        </select>
+      </div>
+    
+      <div class="button-group">
         <button id="load-btn">Load</button>
         <button id="submit-btn">Submit</button>
+      </div>
     </div>
     <div id="message" class="message"></div>
 
