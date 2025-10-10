@@ -118,33 +118,41 @@ function getSelections() {
   return selections;
 }
 
+function showMessage(text, type = "info") {
+  const msg = document.getElementById("message");
+  msg.textContent = text;
+  msg.className = `message ${type}`;
+}
+
 // -------------------- Load Existing Picks --------------------
 loadBtn.addEventListener("click", async () => {
   const username = usernameInput.value.trim();
-  if (!username) return alert("Please enter your name first.");
+  if (!username) return showMessage("Please enter your name first.", "error");
 
   try {
     const res = await fetch(
       `/.netlify/functions/get-picks?username=${encodeURIComponent(username)}`
     );
+
     if (!res.ok) {
-      alert("No saved picks found for this name. You can start a new one.");
+      showMessage("No saved picks found for this name. You can start a new one.", "info");
       renderGroups();
       return;
     }
+
     const data = await res.json();
-    alert("Loaded your saved picks!");
+    showMessage("Loaded your saved picks!", "success");
     renderGroups(data);
   } catch (err) {
     console.error(err);
-    alert("Error loading picks.");
+    showMessage("Error loading picks.", "error");
   }
 });
 
 // -------------------- Submit / Save Picks --------------------
 submitBtn.addEventListener("click", async () => {
   const username = usernameInput.value.trim();
-  if (!username) return alert("Please enter your name first.");
+  if (!username) return showMessage("Please enter your name first.", "error");
 
   const selections = getSelections();
 
@@ -155,13 +163,14 @@ submitBtn.addEventListener("click", async () => {
       body: JSON.stringify({ username, selections }),
     });
 
-    if (res.ok) alert("Your picks have been saved!");
-    else alert("Error saving picks.");
+    if (res.ok) showMessage("Your picks have been saved!", "success");
+    else showMessage("Error saving picks.", "error");
   } catch (err) {
     console.error(err);
-    alert("Network error saving picks.");
+    showMessage("Network error saving picks.", "error");
   }
 });
+
 
 // -------------------- Initial Render --------------------
 renderGroups();

@@ -105,3 +105,81 @@ h2 {
     opacity: 0.7;
     transform: rotate(-2deg);
 }
+
+/* -------------------- Controls (Name + Buttons) -------------------- */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#username {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    background: #f3f8f2;
+    color: #333;
+    min-width: 200px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+#username:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #a3c49e, 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* -------------------- Buttons -------------------- */
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #a3c49e;
+    color: #243B2F;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background: #c8e2c4;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* -------------------- Inline Message Box -------------------- */
+.message {
+    margin-top: 10px;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-height: 24px;
+}
+
+.message.success {
+    background: rgba(163, 196, 158, 0.2);
+    color: #c8e2c4;
+}
+
+.message.error {
+    background: rgba(255, 99, 99, 0.15);
+    color: #ffaaaa;
+}
+
+.message.info {
+    color: #a3c49e;
+}
