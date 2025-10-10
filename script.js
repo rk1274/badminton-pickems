@@ -247,6 +247,34 @@ submitBtn.addEventListener("click", async () => {
   }
 });
 
+async function loadUsernames() {
+  try {
+    const res = await fetch("/.netlify/functions/get-all-usernames"); // you'll create this endpoint
+    if (!res.ok) return;
+    const usernames = await res.json(); // expects ["Alice", "Bob", "Charlie"]
+
+    console.log("Usernames loaded:", usernames);
+
+    const datalist = document.getElementById("usernames");
+    datalist.innerHTML = ""; // clear old options
+
+    usernames.forEach((name) => {
+      const option = document.createElement("option");
+      option.value = name;
+      datalist.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Error loading usernames:", err);
+  }
+}
+
+// Load usernames when page loads
+document.addEventListener("DOMContentLoaded", () => {
+  loadUsernames();
+});
+
 
 // -------------------- Initial Render --------------------
 renderGroups();
+
+
