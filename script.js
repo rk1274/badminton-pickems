@@ -47,6 +47,9 @@ function renderGroups(existingSelections = {}) {
     // Slots
     const slotsContainer = document.createElement("ul");
     slotsContainer.classList.add("slots");
+
+
+
     for (let i = 0; i < 3; i++) {
       const slot = document.createElement("li");
       slot.classList.add("slot");
@@ -86,16 +89,14 @@ function renderGroups(existingSelections = {}) {
     // Load saved picks
     const saved = existingSelections[group.name];
     if (saved) {
+      const poolPlayers = Array.from(poolContainer.children);
       saved.forEach((name, idx) => {
         const slot = slotsContainer.children[idx];
-        const player = Array.from(poolContainer.children).find(
-          (p) => p.textContent === name
-        );
+        // Find the player in the pool
+        const player = poolPlayers.find((p) => p.textContent === name);
         if (player) {
-          const temp = document.createElement("li");
-          poolContainer.replaceChild(temp, player);
-          slotsContainer.replaceChild(player, slot);
-          poolContainer.replaceChild(slot, temp);
+          slot.textContent = "";          // clear slot
+          slot.appendChild(player);       // move player into slot
         }
       });
     }
@@ -153,16 +154,13 @@ function renderGroups(existingSelections = {}) {
   // Load saved picks
   const savedOverall = existingSelections["Overall Top 3"];
   if (savedOverall) {
+    const poolPlayers = Array.from(overallPool.children);
     savedOverall.forEach((name, idx) => {
       const slot = overallSlots.children[idx];
-      const player = Array.from(overallPool.children).find(
-        (p) => p.textContent === name
-      );
+      const player = poolPlayers.find((p) => p.textContent === name);
       if (player) {
-        const temp = document.createElement("li");
-        overallPool.replaceChild(temp, player);
-        overallSlots.replaceChild(player, slot);
-        overallPool.replaceChild(slot, temp);
+        slot.textContent = "";
+        slot.appendChild(player);
       }
     });
   }
