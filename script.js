@@ -2,9 +2,9 @@ const groups = [
   {
     name: "Group 1",
     pairs: [
-      { pair: ["Joy", "Kelvin"], colour: "#72916e", text: "#000000ff" },
-      { pair: ["Ash", "David"], colour: "#a3c4bc", text: "#000000ff" },
-      { pair: ["Vanne", "VJ"], colour: "#d9e6d0", text: "#133f05ff" },
+      { pair: ["Joy", "Kelvin"], colour: "#e2708dff", text: "#000000ff" },
+      { pair: ["Ash", "David"], colour: "#5770ffff", text: "#000000ff" },
+      { pair: ["Vanne", "VJ"], colour: "#008321ff", text: "#133f05ff" },
     ],
   },
   {
@@ -12,7 +12,7 @@ const groups = [
     pairs: [
       { pair: ["Bryan", "Khrystle"], colour: "#FF5900", text: "#000000ff" },
       { pair: ["Rosie", "Kacper"], colour: "#ff8383ff", text: "#000000ff" },
-      { pair: ["Josh", "Lanz 1"], colour: "#88a08e", text: "#000000ff" },
+      { pair: ["Josh", "Lanz 1"], colour: "#d29cffff", text: "#000000ff" },
     ],
   },
   {
@@ -44,18 +44,30 @@ function renderGroups(existingSelections = {}) {
     groupName.textContent = group.name;
     groupContainer.appendChild(groupName);
 
-    // Slots
+    const slotsWrapper = document.createElement("div");
+    slotsWrapper.classList.add("slots-wrapper");
+
+    const ranksContainer = document.createElement("ul");
+    ranksContainer.classList.add("ranks");
+
+    for (let i = 1; i <= 3; i++) {
+      const rankItem = document.createElement("li");
+      rankItem.textContent = i === 1 ? "1st" : i === 2 ? "2nd" : "3rd";
+      ranksContainer.appendChild(rankItem);
+    }
+
     const slotsContainer = document.createElement("ul");
     slotsContainer.classList.add("slots");
-
-
 
     for (let i = 0; i < 3; i++) {
       const slot = document.createElement("li");
       slot.classList.add("slot");
       slotsContainer.appendChild(slot);
     }
-    groupContainer.appendChild(slotsContainer);
+
+    slotsWrapper.appendChild(ranksContainer);
+    slotsWrapper.appendChild(slotsContainer);
+    groupContainer.appendChild(slotsWrapper);
 
     // Player pool
     const poolContainer = document.createElement("ul");
@@ -114,14 +126,28 @@ function renderGroups(existingSelections = {}) {
   overallName.textContent = "🏆 Overall Top 3";
   overallContainer.appendChild(overallName);
 
+  const overallWrapper = document.createElement("div");
+  overallWrapper.classList.add("slots-wrapper");
+  
+  const overallRanks = document.createElement("ul");
+  overallRanks.classList.add("ranks");
+  
   const overallSlots = document.createElement("ul");
   overallSlots.classList.add("slots");
-  for (let i = 0; i < 3; i++) {
+  
+  ["🥇", "🥈", "🥉"].forEach((medal) => {
+    const rankItem = document.createElement("li");
+    rankItem.textContent = medal;
+    overallRanks.appendChild(rankItem);
+  
     const slot = document.createElement("li");
     slot.classList.add("slot");
     overallSlots.appendChild(slot);
-  }
-  overallContainer.appendChild(overallSlots);
+  });
+  
+  overallWrapper.appendChild(overallRanks);
+  overallWrapper.appendChild(overallSlots);
+  overallContainer.appendChild(overallWrapper);
 
   const overallPool = document.createElement("ul");
   overallPool.classList.add("player-pool");
