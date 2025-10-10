@@ -152,7 +152,7 @@ function renderGroups(existingSelections = {}) {
   });
 
   // Load saved picks
-  const savedOverall = existingSelections["Overall Top 3"];
+  const savedOverall = existingSelections["🏆 Overall Top 3"];
   if (savedOverall) {
     const poolPlayers = Array.from(overallPool.children);
     savedOverall.forEach((name, idx) => {
@@ -173,14 +173,15 @@ function getSelections() {
 
   document.querySelectorAll(".group-container").forEach((container) => {
     const groupName = container.querySelector(".name").textContent;
-    const slots = container.querySelectorAll(".slot");
+    const slots = container.querySelectorAll(".slots li"); // all li in slots
     selections[groupName] = Array.from(slots)
       .map((slot) => slot.textContent.trim())
-      .filter(Boolean);
+      .filter(Boolean); // ignore empty slots
   });
 
   return selections;
 }
+
 
 
 function showMessage(text, type = "info") {
