@@ -102,7 +102,7 @@ function getSelections() {
 
   document.querySelectorAll(".group-container").forEach((container) => {
     const groupName = container.querySelector(".name").textContent;
-    const slots = container.querySelectorAll(".slot");
+    const slots = container.querySelectorAll(".slots li"); // all li in slots
     selections[groupName] = Array.from(slots)
       .map((slot) => slot.textContent.trim())
       .filter(Boolean); // ignore empty slots
