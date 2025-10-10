@@ -90,7 +90,14 @@ function renderGroups(existingSelections = {}) {
         const player = Array.from(poolContainer.children).find(
           (p) => p.textContent === name
         );
-        if (player) slot.appendChild(player);
+      
+        if (player) {
+          // --- swap the slot and player in the DOM ---
+          const temp = document.createElement("li");
+          poolContainer.replaceChild(temp, player); // placeholder where player was
+          slotsContainer.replaceChild(player, slot); // move player into slot
+          poolContainer.replaceChild(slot, temp);    // move old slot into pool
+        }
       });
     }
   });
