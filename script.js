@@ -89,14 +89,17 @@ function renderGroups(existingSelections = {}) {
     // Load saved picks
     const saved = existingSelections[group.name];
     if (saved) {
-      const poolPlayers = Array.from(poolContainer.children);
       saved.forEach((name, idx) => {
         const slot = slotsContainer.children[idx];
-        // Find the player in the pool
-        const player = poolPlayers.find((p) => p.textContent === name);
+        const player = Array.from(poolContainer.children).find(
+          (p) => p.textContent === name
+        );
         if (player) {
-          slot.textContent = "";          // clear slot
-          slot.appendChild(player);       // move player into slot
+          // --- swap the slot and player in the DOM ---
+          const temp = document.createElement("li");
+          poolContainer.replaceChild(temp, player); // placeholder where player was
+          slotsContainer.replaceChild(player, slot); // move player into slot
+          poolContainer.replaceChild(slot, temp);    // move old slot into pool
         }
       });
     }
@@ -154,13 +157,17 @@ function renderGroups(existingSelections = {}) {
   // Load saved picks
   const savedOverall = existingSelections["🏆 Overall Top 3"];
   if (savedOverall) {
-    const poolPlayers = Array.from(overallPool.children);
     savedOverall.forEach((name, idx) => {
       const slot = overallSlots.children[idx];
-      const player = poolPlayers.find((p) => p.textContent === name);
+      const player = Array.from(overallPool.children).find(
+        (p) => p.textContent === name
+      );
       if (player) {
-        slot.textContent = "";
-        slot.appendChild(player);
+        // Swap the slot and player in the DOM
+        const temp = document.createElement("li");
+        overallPool.replaceChild(temp, player); // placeholder where player was
+        overallSlots.replaceChild(player, slot); // move player into slot
+        overallPool.replaceChild(slot, temp);    // move old slot into pool
       }
     });
   }
